@@ -289,7 +289,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const genNum = Math.floor(isDoubles ? -genIdent : genIdent);
 		const isBW1 = genIdent === 5.1;
 		const isRS = genIdent === 3.1;
-		const isFDL5 = genIdent === (genIdent === 9.905 || genIdent === -9.905);
+		const isFDL5 = (genIdent === 9.905 || genIdent === -9.905);
 		const gen = (() => {
 			let genStr = 'gen' + genNum;
 			if (isSSDLC1) genStr += 'dlc1';
