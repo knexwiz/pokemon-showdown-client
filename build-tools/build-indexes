@@ -870,7 +870,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				} else if (item.name.startsWith("TR")) {
 					badItems.push(id);
 				} else if (item.name.endsWith(" Gem") && item.name !== "Normal Gem") {
-					if (genNum >= 6 && !isFDL5) {
+					if (genNum >= 6 && !isFDL5 && genNum != 9) {
 						unreleasedItems.push(id);
 					} else {
 						goodItems.push(id);
