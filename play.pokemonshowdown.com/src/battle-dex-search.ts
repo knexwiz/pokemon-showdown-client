@@ -713,7 +713,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 		if (format.includes('fdl5')) {
 			this.formatType = 'fdl5';
 			this.dex = Dex.mod('gen9fdl5' as ID);
-			format = format = 'ou' as ID;
 		}
 		this.format = format;
 
