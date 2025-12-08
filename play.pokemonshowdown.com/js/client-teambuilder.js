@@ -33,6 +33,9 @@
 				if (this.curTeam.format.includes('legends')) {
 					this.curTeam.dex = Dex.mod('gen9legendsou');
 				}
+				if (this.curTeam.format.includes('fdl5')) {
+					this.curTeam.dex = Dex.mod('gen9fld5');
+				}
 				Storage.activeSetList = this.curSetList;
 			}
 		},
@@ -760,6 +763,9 @@
 			}
 			if (this.curTeam.format.includes('legends')) {
 				this.curTeam.dex = Dex.mod('gen9legendsou');
+			}
+			if (this.curTeam.format.includes('fdl5')) {
+				this.curTeam.dex = Dex.mod('gen9fdl5');
 			}
 			Storage.activeSetList = this.curSetList = Storage.unpackTeam(this.curTeam.team);
 			this.curTeamIndex = i;
@@ -1616,6 +1622,9 @@
 			}
 			if (this.curTeam.format.includes('legends')) {
 				this.curTeam.dex = Dex.mod('gen9legendsou');
+			}
+			if (this.curTeam.format.includes('fdl5')) {
+				this.curTeam.dex = Dex.mod('gen9fdl5');
 			}
 			this.save();
 			if (this.curTeam.gen === 5 && !Dex.loadedSpriteData['bw']) Dex.loadSpriteData('bw');
