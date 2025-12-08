@@ -33,6 +33,9 @@
 				if (this.curTeam.format.includes('legends')) {
 					this.curTeam.dex = Dex.mod('gen9legendsou');
 				}
+				if (this.curTeam.format.includes('test13245')) {
+					this.curTeam.dex = Dex.mod('gen9legendsou');
+				}
 				if (this.curTeam.format.includes('fdl5')) {
 					this.curTeam.dex = Dex.mod('gen9fld5');
 				}
@@ -762,6 +765,9 @@
 				this.curTeam.dex = Dex.mod('gen8bdsp');
 			}
 			if (this.curTeam.format.includes('legends')) {
+				this.curTeam.dex = Dex.mod('gen9legendsou');
+			}
+			if (this.curTeam.format.includes('test12345')) {
 				this.curTeam.dex = Dex.mod('gen9legendsou');
 			}
 			if (this.curTeam.format.includes('fdl5')) {
@@ -1621,6 +1627,9 @@
 				this.curTeam.dex = Dex.mod('gen8bdsp');
 			}
 			if (this.curTeam.format.includes('legends')) {
+				this.curTeam.dex = Dex.mod('gen9legendsou');
+			}
+			if (this.curTeam.format.includes('test12345')) {
 				this.curTeam.dex = Dex.mod('gen9legendsou');
 			}
 			if (this.curTeam.format.includes('fdl5')) {
