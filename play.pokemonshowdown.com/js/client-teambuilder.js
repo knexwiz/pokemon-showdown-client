@@ -33,7 +33,7 @@
 				if (this.curTeam.format.includes('legends')) {
 					this.curTeam.dex = Dex.mod('gen9legendsou');
 				}
-				if (this.curTeam.format.includes('test13245')) {
+				if (this.curTeam.format.includes('fdl')) {
 					this.curTeam.dex = Dex.mod('gen9legendsou');
 				}
 				Storage.activeSetList = this.curSetList;
