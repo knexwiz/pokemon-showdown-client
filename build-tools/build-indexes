@@ -8,19 +8,19 @@ const child_process = require("child_process");
 const rootDir = path.resolve(__dirname, '..');
 process.chdir(rootDir);
 
-if (!fs.existsSync('caches/fdl-showdown-server')) {
-	child_process.execSync('git clone https://github.com/knexwiz/fdl-showdown-server', {
+if (!fs.existsSync('caches/showdown')) {
+	child_process.execSync('git clone https://github.com/knexwiz/pokemon-showdown', {
 		cwd: 'caches',
 	});
 }
 
 process.stdout.write("Syncing data from Git repository... ");
-child_process.execSync('git pull', { cwd: 'caches/fdl-showdown-server' });
-child_process.execSync('npm run build', { cwd: 'caches/fdl-showdown-server' });
+child_process.execSync('git pull', { cwd: 'caches/pokemon-showdown' });
+child_process.execSync('npm run build', { cwd: 'caches/pokemon-showdown' });
 console.log("DONE");
 
-const Dex = require('../caches/fdl-showdown-server/dist/sim/dex').Dex;
-const CompoundWordNames = require('../caches/fdl-showdown-server/dist/data/aliases').CompoundWordNames;
+const Dex = require('../caches/pokemon-showdown/dist/sim/dex').Dex;
+const CompoundWordNames = require('../caches/pokemon-showdown/dist/data/aliases').CompoundWordNames;
 const toID = Dex.toID;
 process.stdout.write("Loading gen 6 data... ");
 Dex.includeData();
@@ -262,7 +262,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	const STADIUM = [2.04, 1.04];
 	const NATDEX = [9.1, 8.1];
 	const OTHER = [
-		9.9, 9.6, 9.411, 9.41, 9.401, 9.4, 9.33, 9.2, -9.4, -9.401, 9.905, -9.905,
+		9.9, 9.6, 9.411, 9.41, 9.401, 9.4, 9.33, 9.2, -9.4, -9.401,
 		8.6, 8.4, 8.2, 8.1, -8.4, -8.6,
 		7.1,
 		5.1,
@@ -289,7 +289,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		const genNum = Math.floor(isDoubles ? -genIdent : genIdent);
 		const isBW1 = genIdent === 5.1;
 		const isRS = genIdent === 3.1;
-		const isFDL5 = (genIdent === 9.905 || genIdent === -9.905);
 		const gen = (() => {
 			let genStr = 'gen' + genNum;
 			if (isSSDLC1) genStr += 'dlc1';
@@ -302,7 +301,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			if (isSSB) genStr += 'ssb';
 			if (isBW1) genStr += 'bw1';
 			if (isRS) genStr += 'rs';
-			if (isFDL5) genStr += 'fdl5';
 			return genStr;
 		})();
 		// process.stdout.write("" + gen + (isDoubles ? " doubles" : "") + "... ");
@@ -548,13 +546,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			BattleTeambuilderTable['gen9legendsou'].formatSlices = formatSlices;
 			BattleTeambuilderTable['gen9legendsou'].items = items;
 			BattleTeambuilderTable['gen9legendsou'].learnsets = {};
-		} else if (isFDL5) {
-			BattleTeambuilderTable['gen9fdl5'] = {};
-			BattleTeambuilderTable['gen9fdl5'].tiers = tiers;
-			BattleTeambuilderTable['gen9fdl5'].overrideTier = overrideTier;
-			BattleTeambuilderTable['gen9fdl5'].formatSlices = formatSlices;
-			BattleTeambuilderTable['gen9fdl5'].items = items;
-			BattleTeambuilderTable['gen9fdl5'].learnsets = {};
 		} else if (gen === 'gen9') {
 			BattleTeambuilderTable.tiers = tiers;
 			BattleTeambuilderTable.items = items;
@@ -868,6 +859,8 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			case 'berry':
 				poorItems.push(id);
 				break;
+			case 'buggem':
+				process.stdout.write("\nGot here with " + gen + (isDoubles ? " doubles" : "") + "... ZA?: " + isLegendsZA);
 			default:
 				if (
 					item.name.endsWith(" Ball") || item.name.endsWith(" Fossil") || item.name.startsWith("Fossilized ") ||
@@ -877,8 +870,8 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 				} else if (item.name.startsWith("TR")) {
 					badItems.push(id);
 				} else if (item.name.endsWith(" Gem") && item.name !== "Normal Gem") {
-					if (genNum >= 6 && !isFDL5) {
-						goodItems.push(id);
+					if (genNum >= 6) {
+						unreleasedItems.push(id);
 					} else {
 						goodItems.push(id);
 					}
@@ -1198,52 +1191,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			}
 		}
 	}
-	const FDL5Learnsets = Dex.mod('gen9fdl5').data.Learnsets;
-	for (const id in FDL5Learnsets) {
-		const learnset = FDL5Learnsets[id].learnset;
-		if (!learnset) continue;
-		BattleTeambuilderTable['gen9fdl5'].learnsets[id] = {};
-		for (const moveid in learnset) {
-			const gens = learnset[moveid].map(x => Number(x[0]));
-			const minGen = Math.min(...gens);
-
-			if (minGen <= 4 && (gen3HMs.has(moveid) || gen4HMs.has(moveid))) {
-				let legalGens = '';
-				let available = false;
-
-				if (minGen === 3) {
-					legalGens += '3';
-					available = true;
-				}
-				if (available) available = !gen3HMs.has(moveid);
-
-				if (available || gens.includes(4)) {
-					legalGens += '4';
-					available = true;
-				}
-				if (available) available = !gen4HMs.has(moveid);
-
-				const minUpperGen = available ? 5 : Math.min(
-					...gens.filter(gen => gen > 4)
-				);
-				legalGens += '0123456789'.slice(minUpperGen);
-				BattleTeambuilderTable['gen9fdl5'].learnsets[id][moveid] = legalGens;
-			} else {
-				BattleTeambuilderTable['gen9fdl5'].learnsets[id][moveid] = '0123456789'.slice(minGen);
-			}
-
-			if (gens.indexOf(6) >= 0) BattleTeambuilderTable['gen9fdl5'].learnsets[id][moveid] += 'p';
-			if (gens.indexOf(7) >= 0 && learnset[moveid].some(x => x[0] === '7' && x !== '7V')) {
-				BattleTeambuilderTable['gen9fdl5'].learnsets[id][moveid] += 'q';
-			}
-			if (gens.indexOf(8) >= 0 && learnset[moveid].some(x => x[0] === '8' && x !== '8V')) {
-				BattleTeambuilderTable['gen9fdl5'].learnsets[id][moveid] += 'g';
-			}
-			if (gens.indexOf(9) >= 0 && learnset[moveid].some(x => x[0] === '9' && x !== '9V')) {
-				BattleTeambuilderTable['gen9fdl5'].learnsets[id][moveid] += 'a';
-			}
-		}
-	}
 
 	// Client relevant data that should be overridden by past gens and mods
 	const overrideSpeciesKeys = [
@@ -1342,7 +1289,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 	// Mods
 	//
 
-	for (const mod of ['gen3rs', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen9ssb', 'gen9legendsou', 'gen9fdl5']) {
+	for (const mod of ['gen3rs', 'gen5bw1', 'gen7letsgo', 'gen8bdsp', 'gen9ssb', 'gen9legendsou']) {
 		const modDex = Dex.mod(mod);
 		const modData = modDex.data;
 		const parentDex = Dex.forGen(modDex.gen);
@@ -1415,7 +1362,7 @@ console.log("DONE");
 process.stdout.write("Building `data/pokedex.js`... ");
 
 {
-	const Pokedex = requireNoCache('../caches/fdl-showdown-server/dist/data/pokedex.js').Pokedex;
+	const Pokedex = requireNoCache('../caches/pokemon-showdown/dist/data/pokedex.js').Pokedex;
 	for (const id in Pokedex) {
 		const entry = Pokedex[id];
 		if (Dex.data.FormatsData[id]) {
@@ -1440,7 +1387,7 @@ console.log("DONE");
 process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.js`...");
 
 {
-	const Moves = requireNoCache('../caches/fdl-showdown-server/dist/data/moves.js').Moves;
+	const Moves = requireNoCache('../caches/pokemon-showdown/dist/data/moves.js').Moves;
 	for (const id in Moves) {
 		const move = Dex.moves.get(Moves[id].name);
 		if (move.desc) Moves[id].desc = move.desc;
@@ -1457,7 +1404,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Items = requireNoCache('../caches/fdl-showdown-server/dist/data/items.js').Items;
+	const Items = requireNoCache('../caches/pokemon-showdown/dist/data/items.js').Items;
 	for (const id in Items) {
 		const item = Dex.items.get(Items[id].name);
 		if (item.desc) Items[id].desc = item.desc;
@@ -1472,7 +1419,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Abilities = requireNoCache('../caches/fdl-showdown-server/dist/data/abilities.js').Abilities;
+	const Abilities = requireNoCache('../caches/pokemon-showdown/dist/data/abilities.js').Abilities;
 	for (const id in Abilities) {
 		const ability = Dex.abilities.get(Abilities[id].name);
 		if (ability.desc) Abilities[id].desc = ability.desc;
@@ -1487,7 +1434,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const TypeChart = requireNoCache('../caches/fdl-showdown-server/dist/data/typechart.js').TypeChart;
+	const TypeChart = requireNoCache('../caches/pokemon-showdown/dist/data/typechart.js').TypeChart;
 	const buf = 'exports.BattleTypeChart = ' + es3stringify(TypeChart) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/typechart.js', buf);
 }
@@ -1497,7 +1444,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Aliases = requireNoCache('../caches/fdl-showdown-server/dist/data/aliases.js').Aliases;
+	const Aliases = requireNoCache('../caches/pokemon-showdown/dist/data/aliases.js').Aliases;
 	const buf = 'exports.BattleAliases = ' + es3stringify(Aliases) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/aliases.js', buf);
 }
@@ -1507,7 +1454,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const FormatsData = requireNoCache('../caches/fdl-showdown-server/dist/data/formats-data.js').FormatsData;
+	const FormatsData = requireNoCache('../caches/pokemon-showdown/dist/data/formats-data.js').FormatsData;
 	const buf = 'exports.BattleFormatsData = ' + es3stringify(FormatsData) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/formats-data.js', buf);
 }
@@ -1517,7 +1464,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Formats = requireNoCache('../caches/fdl-showdown-server/dist/config/formats.js').Formats;
+	const Formats = requireNoCache('../caches/pokemon-showdown/dist/config/formats.js').Formats;
 	const buf = 'exports.Formats = ' + es3stringify(Formats) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/formats.js', buf);
 }
@@ -1527,7 +1474,7 @@ process.stdout.write("Building `data/moves,items,abilities,typechart,learnsets.j
  *********************************************************/
 
 {
-	const Learnsets = requireNoCache('../caches/fdl-showdown-server/dist/data/learnsets.js').Learnsets;
+	const Learnsets = requireNoCache('../caches/pokemon-showdown/dist/data/learnsets.js').Learnsets;
 	const buf = 'exports.BattleLearnsets = ' + es3stringify(Learnsets) + ';';
 	fs.writeFileSync('play.pokemonshowdown.com/data/learnsets.js', buf);
 	fs.writeFileSync('play.pokemonshowdown.com/data/learnsets.json', JSON.stringify(Learnsets));
