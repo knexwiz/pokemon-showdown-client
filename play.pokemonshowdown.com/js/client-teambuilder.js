@@ -33,9 +33,6 @@
 				if (this.curTeam.format.includes('legends')) {
 					this.curTeam.dex = Dex.mod('gen9legendsou');
 				}
-				if (this.curTeam.format.includes('testering')) {
-					this.curTeam.dex = Dex.mod('gen9legendsou');
-				}
 				Storage.activeSetList = this.curSetList;
 			}
 		},
@@ -762,9 +759,6 @@
 				this.curTeam.dex = Dex.mod('gen8bdsp');
 			}
 			if (this.curTeam.format.includes('legends')) {
-				this.curTeam.dex = Dex.mod('gen9legendsou');
-			}
-			if (this.curTeam.format.includes('testering')) {
 				this.curTeam.dex = Dex.mod('gen9legendsou');
 			}
 			Storage.activeSetList = this.curSetList = Storage.unpackTeam(this.curTeam.team);
@@ -1621,9 +1615,6 @@
 				this.curTeam.dex = Dex.mod('gen8bdsp');
 			}
 			if (this.curTeam.format.includes('legends')) {
-				this.curTeam.dex = Dex.mod('gen9legendsou');
-			}
-			if (this.curTeam.format.includes('testering')) {
 				this.curTeam.dex = Dex.mod('gen9legendsou');
 			}
 			this.save();

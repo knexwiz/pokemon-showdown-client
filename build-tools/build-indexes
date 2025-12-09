@@ -9,7 +9,7 @@ const rootDir = path.resolve(__dirname, '..');
 process.chdir(rootDir);
 
 if (!fs.existsSync('caches/pokemon-showdown')) {
-	child_process.execSync('git clone https://github.com/knexwiz/pokemon-showdown', {
+	child_process.execSync('git clone https://github.com/smogon/pokemon-showdown.git', {
 		cwd: 'caches',
 	});
 }
@@ -269,7 +269,7 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 		3.1,
 	];
 
-	process.stdout.write("\n  ");
+	// process.stdout.write("\n  ");
 	for (const genIdent of [...GENS, ...DOUBLES, ...VGC, ...NFE, ...STADIUM, ...OTHER, ...NATDEX, ...LC]) {
 		const isLetsGo = (genIdent === 7.1);
 		const isBDSP = (genIdent === 8.6 || genIdent === -8.6);
@@ -859,8 +859,6 @@ process.stdout.write("Building `data/teambuilder-tables.js`... ");
 			case 'berry':
 				poorItems.push(id);
 				break;
-			case 'buggem':
-				process.stdout.write("\nGot here with " + gen + (isDoubles ? " doubles" : "") + "... ZA?: " + isLegendsZA);
 			default:
 				if (
 					item.name.endsWith(" Ball") || item.name.endsWith(" Fossil") || item.name.startsWith("Fossilized ") ||

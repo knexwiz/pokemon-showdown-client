@@ -710,11 +710,6 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			format = format.slice(9) as ID;
 			if (!format) format = 'ou' as ID;
 		}
-		if (format.includes('testering')) {
-			this.formatType = 'legendsza';
-			this.dex = Dex.mod('gen9legendsou' as ID);
-			format = 'ou' as ID;
-		}
 		this.format = format;
 
 		this.species = '' as ID;
